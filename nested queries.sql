@@ -1,27 +1,43 @@
-use northwind;
--- 1. Most expensive product(s)
+-- 1
 SELECT ProductName
 FROM Products
-WHERE UnitPrice = (SELECT MAX(UnitPrice) FROM Products);
+WHERE UnitPrice = (
+	SELECT MAX(UnitPrice)
+	FROM Products
+);
 
--- 2. Orders shipped via Federal Shipping
-SELECT OrderID, ShipName, ShipAddress
+-- 2
+SELECT Orders.OrderID, Orders.ShipName, Orders.ShipAddress
 FROM Orders
-WHERE ShipperID = (SELECT ShipperID FROM Shippers WHERE ShipperName = 'Federal Shipping');
+WHERE Orders.ShipVia = (
+	SELECT ShipperID
+    FROM Shippers
+    WHERE CompanyName = "Federal Shipping"
+    );
+    
+-- 3
+SELECT OrderID
+FROM `Order Details`
+WHERE ProductID = (
+	SELECT ProductID
+	FROM products
+	WHERE ProductName = "Sasquatch Ale"
+);
 
--- 3. Orders that contain Sasquatch Ale
-SELECT DISTINCT od.OrderID
-FROM `Order Details` od
-WHERE od.ProductID = (SELECT ProductID FROM Products WHERE ProductName = 'Sasquatch Ale');
+-- 4
+SELECT FirstName, LastName
+FROM Employees
+WHERE EmployeeID = (
+SELECT EmployeeID
+FROM Orders
+WHERE OrderID = 10266
+);
 
--- 4. Employee who sold order 10266
-SELECT CONCAT(FirstName, ' ', LastName) AS EmployeeName
-FROM Employees e
-JOIN Orders o ON e.EmployeeID = o.EmployeeID
-WHERE o.OrderID = 10248;
-
--- 5. Customer who bought order 10266
-SELECT ContactName
-FROM Customers c
-JOIN Orders o ON c.CustomerID = o.CustomerID
-WHERE o.OrderID = 10248;
+-- 5
+SELECT CompanyName
+FROM Customers
+WHERE CustomerID = (
+	SELECT CustomerID
+    FROM Orders
+    WHERE OrderID = 10266
+);
